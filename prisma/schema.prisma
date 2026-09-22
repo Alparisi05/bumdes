@@ -1,0 +1,102 @@
+// Prisma Schema for BUMDes Budidaya Melon Information System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int             @id @default(autoincrement())
+  nama           String
+  username       String          @unique
+  password       String
+  role           String          @default("KASIR") // Enum: ADMIN | KASIR
+  createdAt      DateTime        @default(now())
+  transactions   Transaction[]
+  expenses       Expense[]
+  stockMovements StockMovement[]
+}
+
+model Product {
+  id             Int               @id @default(autoincrement())
+  nama           String            @unique
+  hargaPerKg     Int
+  stokKg         Int               @default(0)
+  createdAt      DateTime          @default(now())
+  items          TransactionItem[]
+  stockMovements StockMovement[]
+}
+
+model PlantingPeriod {
+  id             Int       @id @default(autoincrement())
+  nama           String
+  tanggalMulai   DateTime
+  tanggalSelesai DateTime
+  catatan        String?
+  createdAt      DateTime  @default(now())
+  expenses       Expense[]
+}
+
+model Transaction {
+  id        Int               @id @default(autoincrement())
+  kode      String            @unique
+  tanggal   DateTime          @default(now())
+  userId    Int
+  total     Int
+  bayar     Int
+  kembalian Int
+  catatan   String?
+  user      User              @relation(fields: [userId], references: [id])
+  items     TransactionItem[]
+}
+
+model TransactionItem {
+  id            Int         @id @default(autoincrement())
+  transactionId Int
+  productId     Int
+  beratKg       Int
+  hargaPerKg    Int
+  subtotal      Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id])
+}
+
+model ExpenseCategory {
+  id        Int       @id @default(autoincrement())
+  nama      String    @unique
+  deskripsi String?
+  createdAt DateTime  @default(now())
+  expenses  Expense[]
+}
+
+model Expense {
+  id         Int             @id @default(autoincrement())
+  tanggal    DateTime        @default(now())
+  categoryId Int
+  deskripsi  String
+  jumlah     Int
+  periodeId  Int?
+  userId     Int
+  catatan    String?
+  createdAt  DateTime        @default(now())
+  category   ExpenseCategory @relation(fields: [categoryId], references: [id])
+  periode    PlantingPeriod? @relation(fields: [periodeId], references: [id])
+  user       User            @relation(fields: [userId], references: [id])
+}
+
+model StockMovement {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  tipe       String   // Enum: MASUK | KELUAR
+  jumlahKg   Int
+  keterangan String?
+  tanggal    DateTime @default(now())
+  userId     Int
+  product    Product  @relation(fields: [productId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
