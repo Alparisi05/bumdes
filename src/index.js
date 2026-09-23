@@ -39,3 +39,4 @@ app.listen(PORT, () => {
   console.log(`Server BUMDes Budidaya Melon berjalan di port ${PORT}`);
   console.log(`Health Check: http://localhost:${PORT}/api/health`);
 });
+module.exports = app;
