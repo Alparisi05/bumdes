@@ -10,6 +10,7 @@ const stockRoutes = require('./routes/stockRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const expenseCategoryRoutes = require('./routes/expenseCategoryRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 const { errorResponse } = require('./utils/response');
 
@@ -28,6 +29,7 @@ app.use('/api/stock', stockRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/expense-categories', expenseCategoryRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.use((req, res) => {
   return errorResponse(res, `Route ${req.originalUrl} tidak ditemukan`, 404);
